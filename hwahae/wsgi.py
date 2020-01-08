@@ -1,5 +1,5 @@
 """
-WSGI config for myapp project.
+WSGI config for hwahae project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -12,7 +12,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 from whitenoise import WhiteNoise
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings.production")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hwahae.settings.production")
 
 application = get_wsgi_application()
 application = WhiteNoise(application)

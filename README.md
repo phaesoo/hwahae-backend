@@ -1,22 +1,47 @@
 # hwahae-backend
 
-## Structure
-Best practice for django rest framework
+'hwahae-backend' is not an official project of HwaHae(Birdview Inc.) but a toy project for server programmer skill test.
+
+## Documentation
+
+TBD
+
+## Testing
+
+Test DB configurations
+
+- change default charset of item table as utf8 for supporting Korean language.
+```console
+msyql> ALTER TABLE api_item convert to charset utf8;
+```
+
+## References
+
+Best practice of django rest framework
+
 - https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
 - https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
 
-## Test
-### Test DB configurations
-- change default charset of item table as utf8 for supporting Korean language.
-'''
-msyql> ALTER TABLE api_item convert to charset utf8;
-'''
-
 ## Todo list
 
+Main workflow:
+
+[x] Raw data(json) analysis with jupyter notebook
+[x] DB table scheme design
+[x] Dump fixtures(json) from raw data(json)
+[x] Implement initial data part(Procfile, loaddata)
+[ ] Validate DB
+
+Code quality:
+
+[ ] Code structure migration
+
+ETC:
+
+[ ] API documentation (swagger)
 
 ---
-# programmers 과제 테스트 템플릿 - Django
+# To be removed
 
 programmers의 과제 테스트는 코드를 제출하면 자동으로 서버를 구성하여 실행해 볼 수 있는 환경을 제공합니다. 
 

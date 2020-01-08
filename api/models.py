@@ -1,7 +1,17 @@
 from django.db import models
 
 
-# max_length inlcudes extra space to avoid unexpected error due to new dataset
+# max_length includes extra space to avoid unexpected error due to new dataset
+# max_length for existing dataset
+# name 18
+class Ingredient(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    oily = models.SmallIntegerField()
+    dry = models.SmallIntegerField()
+    sensitive = models.SmallIntegerField()
+
+
 # max_length for existing dataset
 # imageId 36
 # name 70
@@ -15,19 +25,4 @@ class Item(models.Model):
     gender = models.CharField(max_length=10)
     category = models.CharField(max_length=20)
     monthlySales = models.IntegerField()
-
-
-# max_length for existing dataset
-# name 18
-class Ingredient(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=50)
-    oily = models.SmallIntegerField()
-    dry = models.SmallIntegerField()
-    sensitive = models.SmallIntegerField()
-
-
-# one to many relationship
-class ItemIngredient(models.Model):
-    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
-    ingredient_id = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    ingredients = models.ManyToManyField(Ingredient)

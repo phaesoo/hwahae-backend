@@ -2,14 +2,17 @@
 
 ## Structure
 Best practice for django rest framework
-https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
-https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
+- https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
+- https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
 
 ## Test
+### Test DB configurations
+- change default charset of item table as utf8 for supporting Korean language.
+'''
+msyql> ALTER TABLE api_item convert to charset utf8;
+'''
 
 ## Todo list
-
-
 
 
 ---

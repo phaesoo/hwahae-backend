@@ -26,19 +26,19 @@ Best practice of django rest framework
 
 Main workflow:
 
-[x] Raw data(json) analysis with jupyter notebook
-[x] DB table scheme design
-[x] Dump fixtures(json) from raw data(json)
-[x] Implement initial data part(Procfile, loaddata)
-[ ] Validate DB
+- [x] Raw data(json) analysis with jupyter notebook
+- [x] DB table scheme design
+- [x] Dump fixtures(json) from raw data(json)
+- [x] Implement initial data part(Procfile, loaddata)
+- [ ] Validate DB
 
 Code quality:
 
-[ ] Code structure migration
+- [ ] Code structure migration
 
 ETC:
 
-[ ] API documentation (swagger)
+- [ ] API documentation (swagger)
 
 ---
 # To be removed

@@ -31,6 +31,9 @@ Main workflow:
 - [x] Dump fixtures(json) from raw data(json)
 - [x] Implement initial data part(Procfile, loaddata)
 - [ ] Validate DB
+- [ ] Test QuerySet with shell, prepare for optimized queries
+- [ ] API implementation
+- [ ] API testing and test code
 
 Code quality:
 

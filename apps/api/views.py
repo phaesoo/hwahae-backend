@@ -52,5 +52,15 @@ def products(request):
     #for i in querysets:
     #    print (i.name, i.score)
 
-    serializer = ItemSerializer(querysets, many=True)
-    return Response(serializer.data)
+    serializer = ItemSerializer(
+        querysets, 
+        many=True, 
+        fields=["id", "imgUrl", "name", "price", "ingredients", "monthlySales"], 
+        image_type="thumbnail"
+        )
+    return success(serializer.data)
+
+@api_view(["GET"])
+def product(request, id):
+    print (id)
+    pass

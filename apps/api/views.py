@@ -5,19 +5,20 @@ from django.db.models import Sum
 from apps.common.response import success, error
 from .models import Item
 from .serializers import ItemSerializer
+from . import configs
 
 
 @api_view(["GET"])
 def products(request):
     skin_type = request.query_params.get("skin_type")
-    if skin_type not in ["oily", "dry", "sensitive"]:
+    if skin_type not in configs.SKIN_TYPES:
         raise ValueError
     category = request.query_params.get("category")
     page = request.query_params.get("page")
     exclude_ingredient = request.query_params.get("exclude_ingredient")
     include_ingredient = request.query_params.get("include_ingredient")
 
-    # prepare for querysets
+    # querysets
     querysets = Item.objects.all()
     if category is not None:
         querysets = querysets.filter(category=category)
@@ -62,5 +63,29 @@ def products(request):
 
 @api_view(["GET"])
 def product(request, id):
-    print (id)
-    pass
+    try:
+        id = int(id)
+    except:
+        raise ValueError
+
+    skin_type = request.query_params.get("skin_type")
+    if skin_type not in configs.SKIN_TYPES:
+        raise ValueError
+
+    # querysets
+    main_item = Item.objects.filter(id=id)
+    item_num = len(main_item)
+    if item_num == 1:
+        category = main_item[0].category
+    elif item_num == 0:
+        raise ValueError
+    else:
+        raise ValueError
+
+    sub_items = Item.objects.filter(category=category).annotate(
+        score=Sum("ingredients__{}".format(skin_type))).order_by("-score", "price")[:3]
+
+    main_serializer = ItemSerializer(main_item, many=True, image_type="image")
+    sub_serializer = ItemSerializer(sub_items, many=True, image_type="thumbnail", fields=["id", "imgUrl", "name", "price"])
+    
+    return success(main_serializer.data + sub_serializer.data)

@@ -1,6 +1,6 @@
 # hwahae-backend
 
-'hwahae-backend' is not an official project of HwaHae(Birdview Inc.) but a toy project for server programmer skill test.
+This is a project for a server programmer skill test.
 
 ## Documentation
 
@@ -22,6 +22,12 @@ Best practice of django rest framework
 - https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
 - https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
 
+## Considerations
+
+How to treat with upper/lower cases for ingredients?
+- I think it is better to normalize them(lower in this project) to improve comparison performance.
+- It might better to control them from client side(frontend). ex) give upper case to first letter.
+
 ## Todo list
 
 Main workflow:
@@ -31,8 +37,8 @@ Main workflow:
 - [x] Dump fixtures(json) from raw data(json)
 - [x] Implement initial data part(Procfile, loaddata)
 - [ ] Validate DB
-- [ ] Test QuerySet with shell, prepare for optimized queries
-- [ ] API implementation
+- [x] Test QuerySet with shell, prepare for optimized queries
+- [x] API implementation
 - [ ] API testing and test code
 
 Code quality:

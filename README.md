@@ -39,6 +39,7 @@ Main workflow:
 - [ ] Validate DB
 - [x] Test QuerySet with shell, prepare for optimized queries
 - [x] API implementation
+- [x] Exception handling - custom exeption handler
 - [ ] API testing and test code
 
 Code quality:

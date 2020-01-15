@@ -3,5 +3,7 @@ env
 *.pyc
 __pycache__
 
+# custom
 .venv
 .ipynb_checkpoints
+*.db

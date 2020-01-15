@@ -8,11 +8,13 @@ TBD
 
 ## Testing
 
-Test DB configurations
+Environment
 
-- change default charset of item table as utf8 for supporting Korean language.
+- Database: sqlite3
+
 ```console
-msyql> ALTER TABLE api_item convert to charset utf8;
+$ cd hwahae-backend
+$ bash run_test.sh
 ```
 
 ## References

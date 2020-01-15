@@ -19,7 +19,7 @@ from apps.api import views
 
 
 urlpatterns = [
-    path("products/", views.products),
-    url(r"^product/(?P<id>\w+)/$", views.product),
+    path("products/", views.products, name="products"),
+    url(r"^product/(?P<id>\w+)/$", views.product, name="product"),
 ]
 

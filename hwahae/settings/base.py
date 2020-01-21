@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # api
     'rest_framework',
+    'rest_framework_swagger',
     'apps.api',
 ]
 
@@ -126,3 +127,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'apps.common.exceptions.custom_exception_handler'
 }
+
+QUERY_PAGE_SIZE = 50

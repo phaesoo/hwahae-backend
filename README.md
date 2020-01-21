@@ -2,9 +2,11 @@
 
 This is a project for a server programmer skill test.
 
+
 ## Documentation
 
 TBD
+
 
 ## Testing
 
@@ -17,18 +19,20 @@ $ cd hwahae-backend
 $ bash run_test.sh
 ```
 
-## References
-
-Best practice of django rest framework
-
-- https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
-- https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
 
 ## Considerations
 
-How to treat with upper/lower cases for ingredients?
-- I think it is better to normalize them(lower in this project) to improve comparison performance.
-- It might better to control them from client side(frontend). ex) give upper case to first letter.
+Data cleansing
+
+- Normalize string values into lower case to improve efficiency.
+- Remove duplicated values. (ingredients)
+
+Data validation
+
+- Prepare for test serializer and endpoint for the data validation include 'score' information. (name='test_data', TestItemSerializer)
+- Validate data with jupyter notebook and dump cache for valid data object. (notebook/1_data_validation.ipynb, notebook/test/valid.pickle)
+- Add unit test for data validation by using dumped cache. (endpoint name)
+
 
 ## Todo list
 
@@ -38,9 +42,9 @@ Main workflow:
 - [x] DB table scheme design
 - [x] Dump fixtures(json) from raw data(json)
 - [x] Implement initial data part(Procfile, loaddata)
-- [ ] Validate DB
+- [x] Validate DB, dump valid data(object for unit test)
 - [x] Test QuerySet with shell, prepare for optimized queries
-- [x] API implementation
+- [x] API implementation (include test API)
 - [x] Exception handling - custom exeption handler
 - [ ] API testing and test code
 
@@ -51,6 +55,13 @@ Code quality:
 ETC:
 
 - [ ] API documentation (swagger)
+
+## References
+
+Best practice of django rest framework
+
+- https://chrisbartos.com/articles/how-to-structure-your-django-app-with-api/
+- https://thinkster.io/django-angularjs-tutorial#learning-django-and-angularjs
 
 ---
 # To be removed

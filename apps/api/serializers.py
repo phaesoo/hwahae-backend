@@ -30,3 +30,17 @@ class ItemSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Item
         fields = ["id", "imgUrl", "name", "price", "gender", "category", "ingredients", "monthlySales"]
+
+
+# for testing
+class TestItemSerializer(DynamicFieldsModelSerializer):
+    ingredients = serializers.SerializerMethodField()
+    score = serializers.IntegerField()
+
+    def get_ingredients(self, instance):
+        queryset = instance.ingredients.get_queryset()
+        return ",".join([a.name for a in queryset])
+
+    class Meta:
+        model = Item
+        fields = ["id", "name", "price", "category", "ingredients", "score"]

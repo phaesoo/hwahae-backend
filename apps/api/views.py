@@ -1,10 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.conf import settings
 from django.db.models import Sum
+from rest_framework.exceptions import NotFound
 from apps.common.exceptions import InvalidQueryParam, DatabaseError
 from .models import Item
-from .serializers import ItemSerializer
+from .serializers import ItemSerializer, TestItemSerializer
 from . import configs
 
 
@@ -47,7 +49,7 @@ def products(request):
             raise InvalidQueryParam("Invalid query param: page")
 
         paginator = PageNumberPagination()
-        paginator.page_size = 50
+        paginator.page_size = settings.QUERY_PAGE_SIZE
         querysets = paginator.paginate_queryset(querysets, request)
 
     # serializing
@@ -57,6 +59,10 @@ def products(request):
         fields=["id", "imgUrl", "name", "price", "ingredients", "monthlySales"], 
         image_type="thumbnail"
         )
+
+    if not len(serializer.data):
+        raise NotFound
+    
     return Response(serializer.data)
 
 @api_view(["GET"])
@@ -91,4 +97,39 @@ def product(request, id):
     sub_serializer = ItemSerializer(sub_items, many=True, image_type="thumbnail", fields=["id", "imgUrl", "name", "price"])
     
     # return merged result
+    return Response(main_serializer.data + sub_serializer.data)
+
+
+# extra endpoint for data validation
+@api_view(["GET"])
+def test_data(request, id):
+    try:
+        id = int(id)
+    except:
+        raise InvalidQueryParam("Invalid query param: id={}".format(id))
+
+    skin_type = request.query_params.get("skin_type")
+    if skin_type is None:
+        raise InvalidQueryParam("skin_type should be specified")
+    elif skin_type not in configs.SKIN_TYPES:
+        raise InvalidQueryParam("Invalid query param: skin_type={}".format(skin_type))
+
+    # queryset for main item
+    main_item = Item.objects.filter(id=id)
+    item_num = len(main_item)
+    if item_num == 1:
+        category = main_item[0].category
+    elif item_num == 0:
+        raise InvalidQueryParam("id not found: id={}".format(id))
+    else:
+        raise DatabaseError("Duplicated row in DB: id={}".format(id))
+
+    # queryset for sub item
+    sub_items = Item.objects.filter(category=category).annotate(
+        score=Sum("ingredients__{}".format(skin_type))).order_by("-score", "price")[:3]
+
+    # serializing
+    main_serializer = TestItemSerializer(main_item, many=True, fields=["id", "name", "price", "category", "ingredients"])
+    sub_serializer = TestItemSerializer(sub_items, many=True)
+
     return Response(main_serializer.data + sub_serializer.data)

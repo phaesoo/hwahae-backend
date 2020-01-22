@@ -4,14 +4,35 @@ from rest_framework.pagination import PageNumberPagination
 from django.conf import settings
 from django.db.models import Sum
 from rest_framework.exceptions import NotFound
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from apps.common.exceptions import InvalidQueryParam, DatabaseError
 from .models import Item
 from .serializers import ItemSerializer, TestItemSerializer
 from . import configs
 
 
+# query parameters
+param_skin_type = openapi.Parameter('skin_type', openapi.IN_QUERY, description="['oily', 'sensitive', 'dry']", type=openapi.TYPE_STRING, required=True)
+param_category = openapi.Parameter('category', openapi.IN_QUERY, description="Cosmetic category", type=openapi.TYPE_STRING)
+param_page = openapi.Parameter('page', openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER)
+param_exclude_ingredient = openapi.Parameter('exclude_ingredient', openapi.IN_QUERY, description="Ingredient list which have to be excluded(comma separated)", type=openapi.TYPE_STRING)
+param_include_ingredient = openapi.Parameter('include_ingredient', openapi.IN_QUERY, description="Ingredient list which have to be included(comma separated)", type=openapi.TYPE_STRING)
+
+
+@swagger_auto_schema(
+    methods=["get"], 
+    operation_description="API for getting cosmetic informations satisfying given conditions. (order by high-score desc.)",
+    manual_parameters=[
+        param_skin_type,
+        param_category,
+        param_page,
+        param_exclude_ingredient,
+        param_include_ingredient,
+    ])
 @api_view(["GET"])
 def products(request):
+    # query params
     skin_type = request.query_params.get("skin_type")
     if skin_type is None:
         raise InvalidQueryParam("skin_type should be specified")
@@ -65,13 +86,16 @@ def products(request):
     
     return Response(serializer.data)
 
+
+@swagger_auto_schema(
+    methods=["get"], 
+    operation_description="API for getting detail information of target item(=id) and 3 recommended item summary.",
+    manual_parameters=[
+        param_skin_type,
+    ])
 @api_view(["GET"])
 def product(request, id):
-    try:
-        id = int(id)
-    except:
-        raise InvalidQueryParam("Invalid query param: id={}".format(id))
-
+    # query params
     skin_type = request.query_params.get("skin_type")
     if skin_type is None:
         raise InvalidQueryParam("skin_type should be specified")
@@ -89,25 +113,27 @@ def product(request, id):
         raise DatabaseError("Duplicated row in DB: id={}".format(id))
 
     # queryset for sub item
-    sub_items = Item.objects.filter(category=category).annotate(
+    rec_items = Item.objects.filter(category=category).annotate(
         score=Sum("ingredients__{}".format(skin_type))).order_by("-score", "price")[:3]
 
     # serializing
     main_serializer = ItemSerializer(main_item, many=True, image_type="image")
-    sub_serializer = ItemSerializer(sub_items, many=True, image_type="thumbnail", fields=["id", "imgUrl", "name", "price"])
+    sub_serializer = ItemSerializer(rec_items, many=True, image_type="thumbnail", fields=["id", "imgUrl", "name", "price"])
     
     # return merged result
     return Response(main_serializer.data + sub_serializer.data)
 
 
 # extra endpoint for data validation
+@swagger_auto_schema(
+    methods=["get"], 
+    operation_description="Test API for a data validation",
+    manual_parameters=[
+        param_skin_type,
+    ])
 @api_view(["GET"])
 def test_data(request, id):
-    try:
-        id = int(id)
-    except:
-        raise InvalidQueryParam("Invalid query param: id={}".format(id))
-
+    # query params
     skin_type = request.query_params.get("skin_type")
     if skin_type is None:
         raise InvalidQueryParam("skin_type should be specified")
@@ -124,12 +150,12 @@ def test_data(request, id):
     else:
         raise DatabaseError("Duplicated row in DB: id={}".format(id))
 
-    # queryset for sub item
-    sub_items = Item.objects.filter(category=category).annotate(
+    # queryset for recommended item
+    rec_items = Item.objects.filter(category=category).annotate(
         score=Sum("ingredients__{}".format(skin_type))).order_by("-score", "price")[:3]
 
     # serializing
     main_serializer = TestItemSerializer(main_item, many=True, fields=["id", "name", "price", "category", "ingredients"])
-    sub_serializer = TestItemSerializer(sub_items, many=True)
+    sub_serializer = TestItemSerializer(rec_items, many=True)
 
     return Response(main_serializer.data + sub_serializer.data)

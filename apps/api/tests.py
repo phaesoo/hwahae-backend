@@ -113,7 +113,6 @@ class ProductTests(APITestCase):
     # validate for id, category, price for all cases. (total 3000 cases currently)
     # read valid data from predumped cache (notebook/test/valid.pickle)
     def test_data(self):
-        return
         print ("[INFO] start data validation")
 
         # read predumped validation object from cache
@@ -170,4 +169,3 @@ class ProductTests(APITestCase):
 
         self.assertEqual(len(invalid_id_list), 0)
         print ("[INFO] End data validation")
-

@@ -3,22 +3,19 @@
 This is a project for a server programmer skill test.
 
 
-## Documentation
+## How to run (debug/test)
 
-TBD
-
-
-## Testing
-
-Environment
-
-- Database: sqlite3
+Debugging server
 
 ```console
-$ cd hwahae-backend
-$ bash run_test.sh
+$ bash hwahae-backend/run_debug.sh
 ```
 
+Unit test
+
+```console
+$ bash hwahae-backend/run_test.sh
+```
 
 ## Considerations
 
@@ -34,6 +31,12 @@ Data validation
 - Add unit test for data validation by using dumped cache. (endpoint name)
 
 
+## Tech stacks
+
+- REST framework: djangorestframework 3.11.0
+- Documentation: drf-yasg 1.17.0
+
+
 ## Todo list
 
 Main workflow:
@@ -46,15 +49,15 @@ Main workflow:
 - [x] Test QuerySet with shell, prepare for optimized queries
 - [x] API implementation (include test API)
 - [x] Exception handling - custom exeption handler
-- [ ] API testing and test code
+- [x] API testing and test code
 
 Code quality:
 
-- [ ] Code structure migration
+- [x] Code structure migration
 
 ETC:
 
-- [ ] API documentation (swagger)
+- [x] API documentation (drf-yasg)
 
 ## References
 

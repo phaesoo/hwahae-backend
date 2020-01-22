@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # api
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
     'apps.api',
 ]
 
@@ -109,7 +109,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
@@ -125,7 +124,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Custom
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'apps.common.exceptions.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'apps.common.exceptions.custom_exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 
 QUERY_PAGE_SIZE = 50

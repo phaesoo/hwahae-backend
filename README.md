@@ -3,6 +3,24 @@
 This is a project for a server programmer skill test.
 
 
+# REST API Endpoints
+
+- /swagger/: swagger document
+- /redoc/: redoc document
+- /product/{id}/: main endpoint
+- /products/: main endpoint
+- /test/data/{id}: endpoint for data validation
+
+
+# Project structure
+
+- apps/api/: REST API application.
+- apps/api/fixtures/: Fixture files(json) for initial data.
+- apps/common/: Common modules.
+- hwahae/: Main project directory.
+- notebook/: Jupyter notebook files for interactive data analysis and validation.
+
+
 ## Debugging/Testing
 
 Run debug server
@@ -28,7 +46,7 @@ Data validation
 
 - Prepare for test serializer and endpoint for the data validation include 'score' information. (name='test_data', TestItemSerializer)
 - Validate data with jupyter notebook and dump cache for valid data object. (notebook/1_data_validation.ipynb, notebook/test/valid.pickle)
-- Add unit test for data validation by using dumped cache. (endpoint name)
+- Add unit test for data validation by using dumped cache. (test_data of ProductTests, apps/api/tests.py)
 
 
 ## Tech stacks

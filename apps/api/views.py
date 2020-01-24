@@ -50,14 +50,18 @@ def products(request):
 
     def preprocessing(param):
         param_list = param.split(",")
-        # remove left/right space
-        return [param.strip() for param in param_list]
+        # remove left/right space, normalize to lower case
+        return [param.strip().lower() for param in param_list]
 
     if exclude_ingredient is not None:
-        querysets = querysets.exclude(ingredients__name__in=preprocessing(exclude_ingredient))
+        ingr_list = preprocessing(exclude_ingredient)
+        for ingr in ingr_list:
+            querysets = querysets.exclude(ingredients__name=ingr)
 
     if include_ingredient is not None:
-        querysets = querysets.filter(ingredients__name__in=preprocessing(include_ingredient))
+        ingr_list = preprocessing(include_ingredient)
+        for ingr in ingr_list:
+            querysets = querysets.filter(ingredients__name=ingr)
 
     # sum by skin_type and ordering(score desc, price asc)
     querysets = querysets.annotate(score=Sum("ingredients__{}".format(skin_type))).order_by("-score", "price")

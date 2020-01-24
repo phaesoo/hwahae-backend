@@ -18,16 +18,37 @@ class ProductTests(APITestCase):
         skin_type = "oily"
         args = [3]
 
+        main_response_format = {
+            "id": int,
+            "imgUrl": str,
+            "name": str,
+            "price": int,
+            "gender": str,
+            "category": str,
+            "ingredients": str,
+            "monthlySales": int,
+        }
+
+        rec_response_format = {
+            "id": int,
+            "imgUrl": str,
+            "name": str,
+            "price": int,
+        }
+
+        ######################################################################
         # api call test (fail), without specifying skin_type
         url = "{}".format(reverse("product", args=args))
         response = self.client.get(url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+        ######################################################################
         # api call test (fail), invalid skin_type
         url = "{}?skin_type={}".format(reverse("product", args=args), invalid_skin_type)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+        ######################################################################
         # api call test (success)
         url = "{}?skin_type={}".format(reverse("product", args=args), skin_type)
         response = self.client.get(url)
@@ -41,9 +62,10 @@ class ProductTests(APITestCase):
         main_item = result[0]
         rec_items = result[1:]
 
-        # validate main item
-        for key in ["id", "imgUrl", "name", "price", "gender", "category", "ingredients", "monthlySales"]:
-            assert key in main_item, "key not in main_item: key={}".format(key)
+        # validate main item (key, format)
+        assert set(main_response_format.keys()) == set(main_item.keys())
+        for key in main_response_format:
+            assert isinstance(main_item[key], main_response_format[key])
 
         # image url validation and request test
         img_url = main_item["imgUrl"]
@@ -51,9 +73,11 @@ class ProductTests(APITestCase):
         assert requests.get(img_url).status_code == status.HTTP_200_OK
 
         # validate recommended items
+        key_list = set(rec_response_format.keys())
         for item in rec_items:
-            for key in ["id", "imgUrl", "name", "price"]:
-                assert key in item, "key not in rec_item: key={}".format(key)
+            assert key_list == set(item.keys())
+            for key in rec_response_format:
+                assert isinstance(item[key], rec_response_format[key])
 
             # image url validation and request test
             img_url = item["imgUrl"]
@@ -68,27 +92,57 @@ class ProductTests(APITestCase):
         skin_type = "sensitive"
         page = 1
         category = "maskpack"
+        include_ingredient = ["challenge", "unique"]
+        exclude_ingredient = ["attractive", "frequency"]
 
+        response_format = {
+            "id": int,
+            "imgUrl": str,
+            "name": str,
+            "price": int,
+            "ingredients": str,
+            "monthlySales": int,
+        }
+
+        ######################################################################
         # api call test (fail), without specifying skin_type
         url = "{}".format(reverse("products"))
         response = self.client.get(url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+        ######################################################################
         # api call test (fail), invalid skin_type
         url = "{}?skin_type={}".format(reverse("products"), invalid_skin_type)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+        ######################################################################
         # api call test (success) with skin_type
         url = "{}?skin_type={}".format(reverse("products"), skin_type)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
 
+        # data validation (key and type)
+        results = json.loads(response.content.decode("utf-8"))
+        assert isinstance(results, list)
+        assert len(results)
+
+        # check first 10 items
+        key_list = set(response_format.keys())
+        for result in results[:10]:
+            # key check
+            assert key_list == set(result.keys())
+            # format check
+            for key in response_format:
+                assert isinstance(result[key], response_format[key])
+
+        ######################################################################
         # api call test (fail) with skin_type, invalid_page
         url = "{}?skin_type={}&page={}".format(reverse("products"), skin_type, invalid_page)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+        ######################################################################
         # api call test (success) with skin_type, page
         url = "{}?skin_type={}&page={}".format(reverse("products"), skin_type, page)
         response = self.client.get(url)
@@ -99,21 +153,75 @@ class ProductTests(APITestCase):
         assert isinstance(data, list)
         assert len(data) == settings.QUERY_PAGE_SIZE
 
+        ######################################################################
         # api call test (fail) with skin_type, category
         url = "{}?skin_type={}&category={}".format(reverse("products"), skin_type, invalid_category)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+        ######################################################################
         # api call test (success) with skin_type, category
         url = "{}?skin_type={}&category={}".format(reverse("products"), skin_type, category)
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
 
+        ######################################################################
+        # api call test (success) with skin_type, include_ingredient
+        url = "{}?skin_type={}&include_ingredient={}".format(reverse("products"), skin_type, ",".join(include_ingredient))
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+        # response content validation, should include target ingredients
+        results = json.loads(response.content.decode("utf-8"))
+        assert isinstance(results, list)
+        assert len(results)
+
+        for result in results:
+            ingredients = result["ingredients"]
+            for ingr in include_ingredient:
+                assert ingr in ingredients
+
+        ######################################################################
+        # api call test (success) with skin_type, exclude_ingredient
+        url = "{}?skin_type={}&exclude_ingredient={}".format(reverse("products"), skin_type, ",".join(exclude_ingredient))
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK       
+
+        # response content validation, should exclude target ingredients
+        results = json.loads(response.content.decode("utf-8"))
+        assert isinstance(results, list)
+        assert len(results)
+
+        for result in results:
+            ingredients = result["ingredients"]
+            for ingr in exclude_ingredient:
+                assert ingr not in ingredients
+
+        ######################################################################
+        # api call test (success) with skin_type, include_ingredient, exclude_ingredient
+        include_ingredient = ["sentiment"]
+
+        url = "{}?skin_type={}&include_ingredient={}&exclude_ingredient={}".format(reverse("products"), skin_type, ",".join(include_ingredient), ",".join(exclude_ingredient))
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK       
+
+        # response content validation, should exclude target ingredients
+        results = json.loads(response.content.decode("utf-8"))
+        assert isinstance(results, list)
+        assert len(results)
+
+        for result in results:
+            ingredients = result["ingredients"]
+            for ingr in include_ingredient:
+                assert ingr in ingredients
+            for ingr in exclude_ingredient:
+                assert ingr not in ingredients
+
     # unit test for data validation
     # validate for id, category, price for all cases. (total 3000 cases currently)
     # read valid data from predumped cache (notebook/test/valid.pickle)
     def test_data(self):
-        print ("[INFO] start data validation")
+        print ("[INFO] start data validation for 3000 cases (1000 items * 3 skin types)")
 
         # read predumped validation object from cache
         filename = os.path.join(os.path.dirname(settings.PROJECT_DIR), "notebook", "test", "valid.pickle")
